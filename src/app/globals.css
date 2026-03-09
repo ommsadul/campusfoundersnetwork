@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0f172a;
+
+  --color-primary: #111827;
+  --color-primary-foreground: #ffffff;
+  --color-primary-hover: #1f2937;
+
+  --color-secondary: #f8fafc;
+  --color-secondary-foreground: #0f172a;
+
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+
+  --color-accent: #f1f5f9;
+  --color-accent-foreground: #0f172a;
+
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: #111827;
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Badge Colors — light pastels */
+  --color-badge-technical-bg: #dbeafe;
+  --color-badge-technical-text: #1e40af;
+
+  --color-badge-nontechnical-bg: #ffedd5;
+  --color-badge-nontechnical-text: #9a3412;
+
+  --color-badge-idea-bg: #f3e8ff;
+  --color-badge-idea-text: #6b21a8;
+
+  --color-badge-timeline-bg: #d1fae5;
+  --color-badge-timeline-text: #065f46;
+
+  --color-badge-topic-bg: #f1f5f9;
+  --color-badge-topic-text: #334155;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* Custom Utilities */
+.input {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  color: var(--color-foreground);
+  transition: all 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-ring);
+  box-shadow: 0 0 0 1px var(--color-ring);
+}
+
+.input::placeholder {
+  color: var(--color-muted-foreground);
+}
+
+/* Form inputs (checkbox/radio) override */
+input[type="checkbox"], input[type="radio"] {
+  accent-color: var(--color-primary);
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-foreground);
+}
+
+/* Text utility */
+.text-muted-foreground {
+  color: var(--color-muted-foreground);
+}
+.bg-background {
+  background-color: var(--color-background);
+}
+.bg-card {
+  background-color: var(--color-card);
+}
+.border-border {
+  border-color: var(--color-border);
+}
+
+/* Badge helpers */
+.badge-technical {
+  background-color: var(--color-badge-technical-bg);
+  color: var(--color-badge-technical-text);
+}
+.badge-nontechnical {
+  background-color: var(--color-badge-nontechnical-bg);
+  color: var(--color-badge-nontechnical-text);
+}
+.badge-idea {
+  background-color: var(--color-badge-idea-bg);
+  color: var(--color-badge-idea-text);
+}
+.badge-timeline {
+  background-color: var(--color-badge-timeline-bg);
+  color: var(--color-badge-timeline-text);
+}
+.badge-topic {
+  background-color: var(--color-badge-topic-bg);
+  color: var(--color-badge-topic-text);
+}
