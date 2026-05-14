@@ -1,30 +1,37 @@
+"use client";
+
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 export function Navbar() {
-  return (
-    <nav className="border-b border-border bg-white sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-        <Link href="/dashboard" className="font-bold text-lg tracking-tight text-foreground">
-          Campus Founders
-        </Link>
+  const router = useRouter();
+  const supabase = createClient();
 
-        <div className="flex items-center gap-1">
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  };
+
+  return (
+    <nav className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
+      <div className="max-w-screen-2xl mx-auto px-6 h-16 flex items-center justify-between">
+        <Link href="/dashboard" className="font-serif text-2xl tracking-tight text-foreground hover:opacity-80 transition-opacity">Campus Founders Network</Link>
+
+        <div className="flex items-center gap-4">
           <Link
             href="/dashboard"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-2 rounded-lg transition-colors"
+            className="text-xs font-mono uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
           >
-            Browse
+            [ Directory ]
           </Link>
-          <Link
-            href="/onboarding"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-2 rounded-lg transition-colors"
+          <button
+            onClick={handleSignOut}
+            className="text-xs font-mono uppercase tracking-widest text-destructive hover:opacity-80 transition-opacity border border-destructive px-3 py-1"
           >
-            My Profile
-          </Link>
-          <div className="ml-3">
-            <UserButton afterSignOutUrl="/" />
-          </div>
+            Terminate Session
+          </button>
         </div>
       </div>
     </nav>

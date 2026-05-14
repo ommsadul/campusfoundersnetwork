@@ -1,138 +1,142 @@
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
-  const { userId } = await auth();
-  if (userId) redirect("/dashboard");
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  
+  if (data?.user) redirect("/dashboard");
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
+      {/* Decorative Grid Lines */}
+      <div className="absolute inset-0 pointer-events-none grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 border-r border-border opacity-20">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="border-l border-border h-full" />
+        ))}
+      </div>
+
       {/* Nav */}
-      <nav className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
-        <span className="font-bold text-xl tracking-tight">Campus Founders</span>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/sign-in"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-4 py-2"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/sign-up"
-            className="text-sm font-medium bg-primary text-primary-foreground px-5 py-2.5 rounded-full hover:bg-primary-hover transition-colors"
-          >
-            Get started
-          </Link>
+      <nav className="relative z-10 w-full border-b border-border bg-background/80 backdrop-blur-sm">
+        <div className="max-w-screen-2xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="font-serif text-3xl tracking-tight text-foreground hover:opacity-80 transition-opacity">Campus Founders Network</Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/sign-in"
+              className="text-sm font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
+            >
+              [ Login ]
+            </Link>
+            <Link
+              href="/sign-up"
+              className="text-sm font-bold bg-primary text-primary-foreground px-6 py-2.5 rounded-none border border-primary hover:bg-background hover:text-primary transition-all"
+            >
+              INITIALIZE
+            </Link>
+          </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="max-w-4xl mx-auto px-6 pt-28 pb-24 text-center">
-        <div className="inline-flex items-center gap-2 bg-muted text-sm text-muted-foreground px-4 py-1.5 rounded-full mb-8 font-medium">
-          <span>For university founders</span>
-          <span className="text-foreground">&rarr;</span>
-        </div>
-        <h1 className="text-5xl sm:text-7xl font-bold leading-[1.08] tracking-tight text-foreground">
-          Find your
-          <br />
-          co-founder
-          <br />
-          on campus.
-        </h1>
-        <p className="text-lg sm:text-xl text-muted-foreground mt-8 max-w-2xl mx-auto leading-relaxed">
-          Like YC co-founder matching, but for universities. Create your profile,
-          share your ideas, and connect with fellow students who want to build
-          startups together.
-        </p>
-        <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/sign-up"
-            className="bg-primary text-primary-foreground px-8 py-4 rounded-full text-base font-medium hover:bg-primary-hover transition-colors inline-flex items-center justify-center gap-2"
-          >
-            Join with your .edu email
-            <span>&rarr;</span>
-          </Link>
-        </div>
-        <p className="text-sm text-muted-foreground mt-4">
-          Free for all university students
-        </p>
-      </section>
+      <main className="flex-1 relative z-10 flex flex-col justify-center max-w-screen-2xl mx-auto w-full px-6 py-20 lg:py-32">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
+          
+          <div className="col-span-1 lg:col-span-8 flex flex-col justify-center animate-reveal">
+            <div className="inline-flex items-center gap-3 mb-8">
+              <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
+              <span className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                Network Active / University Only
+              </span>
+            </div>
+            
+            <h1 className="font-serif text-7xl sm:text-8xl lg:text-9xl leading-[0.9] tracking-tighter text-foreground mb-8">
+              Build the <br />
+              <span className="italic text-primary relative">
+                next big thing
+                <span className="absolute bottom-1 left-0 w-full h-1 bg-primary/20"></span>
+              </span>
+              <br /> on campus.
+            </h1>
+            
+            <div className="max-w-xl animate-reveal delay-100 border-l-4 border-primary pl-6 py-2 my-8">
+              <p className="text-xl sm:text-2xl text-foreground font-medium leading-snug">
+                An exclusive directory for ambitious students seeking co-founders. 
+                Stop building alone. Start shipping today.
+              </p>
+            </div>
 
-      {/* How it works */}
-      <section className="border-y border-border bg-secondary/50">
-        <div className="max-w-5xl mx-auto px-6 py-24">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-16 tracking-tight">How it works</h2>
-          <div className="grid sm:grid-cols-3 gap-12">
-            {[
-              {
-                step: "01",
-                title: "Create your profile",
-                desc: "Share your background, skills, startup ideas, and what you're looking for in a co-founder.",
-              },
-              {
-                step: "02",
-                title: "Browse founders",
-                desc: "Explore profiles of students at your university who are building or want to build startups.",
-              },
-              {
-                step: "03",
-                title: "Connect & build",
-                desc: "Found a match? Schedule a call, share ideas, and start building together.",
-              },
-            ].map((item) => (
-              <div key={item.step} className="text-center">
-                <div className="text-sm font-mono font-bold text-muted-foreground mb-4">
-                  {item.step}
-                </div>
-                <h3 className="font-semibold text-lg mb-3 text-foreground">{item.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
+            <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-6 animate-reveal delay-200">
+              <Link
+                href="/sign-up"
+                className="bg-accent text-accent-foreground px-8 py-4 text-base font-bold uppercase tracking-wider flex items-center gap-3 border border-accent hover:bg-primary hover:text-primary-foreground transition-all"
+              >
+                Join Directory
+                <span className="font-serif italic normal-case text-xl">&rarr;</span>
+              </Link>
+              <span className="font-mono text-sm text-muted-foreground">
+                Requires valid .edu email
+              </span>
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* Philosophy */}
-      <section className="py-24">
-        <div className="max-w-3xl mx-auto px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6 tracking-tight">
-            For founders who are serious.
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            This isn&apos;t a job board or a social network. Everyone here has
-            agreed to use this platform for one purpose: finding a co-founder.
-            No selling, no hiring, no spam.
-          </p>
-        </div>
-      </section>
+          <div className="col-span-1 lg:col-span-4 flex flex-col justify-end animate-reveal delay-300">
+             <div className="bg-secondary border border-border p-8 relative overflow-hidden group">
+               {/* Abstract decorative element */}
+               <div className="absolute -right-12 -top-12 w-48 h-48 rounded-full border border-primary/20 group-hover:scale-110 transition-transform duration-700"></div>
+               <div className="absolute -left-12 -bottom-12 w-48 h-48 rounded-full border border-border/60 group-hover:scale-110 transition-transform duration-700 delay-100"></div>
+               
+               <h3 className="font-serif text-3xl mb-4 relative z-10">Why join?</h3>
+               <ul className="space-y-4 font-mono text-sm relative z-10">
+                 <li className="flex items-start gap-3 border-b border-border/50 pb-3">
+                   <span className="text-primary font-bold">01</span>
+                   <span>Access highly vetted technical & non-technical talent.</span>
+                 </li>
+                 <li className="flex items-start gap-3 border-b border-border/50 pb-3">
+                   <span className="text-primary font-bold">02</span>
+                   <span>Filter by skills, major, and graduation year.</span>
+                 </li>
+                 <li className="flex items-start gap-3 pb-2">
+                   <span className="text-primary font-bold">03</span>
+                   <span>Zero noise. Pure builder signal.</span>
+                 </li>
+               </ul>
+             </div>
+          </div>
 
-      {/* CTA */}
-      <section className="border-t border-border bg-secondary/50 py-24">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4 tracking-tight">
-            Ready to find your co-founder?
-          </h2>
-          <p className="text-muted-foreground mb-8 text-lg">
-            Join hundreds of students building the next generation of startups.
-          </p>
-          <Link
-            href="/sign-up"
-            className="bg-primary text-primary-foreground px-8 py-4 rounded-full text-base font-medium hover:bg-primary-hover transition-colors inline-flex items-center gap-2"
-          >
-            Get started free
-            <span>&rarr;</span>
-          </Link>
         </div>
-      </section>
+      </main>
+
+      {/* Marquee Banner */}
+      <div className="border-y border-border bg-accent text-accent-foreground py-3 overflow-hidden relative z-10 flex whitespace-nowrap">
+        <div className="animate-[marquee_20s_linear_infinite] flex items-center gap-8 font-mono text-sm uppercase tracking-widest">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <span key={i} className="flex items-center gap-8">
+              <span>Find a technical co-founder</span>
+              <span className="text-primary opacity-50">*</span>
+              <span>Find a business co-founder</span>
+              <span className="text-primary opacity-50">*</span>
+            </span>
+          ))}
+        </div>
+      </div>
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}} />
 
       {/* Footer */}
-      <footer className="border-t border-border py-8">
-        <p className="text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Campus Founders
-        </p>
+      <footer className="relative z-10 w-full border-t border-border bg-background py-8 mt-auto">
+        <div className="max-w-screen-2xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="font-serif text-2xl tracking-tight text-foreground">Campus Founders Network</div>
+          <div className="font-mono text-xs text-muted-foreground uppercase tracking-widest" suppressHydrationWarning>
+            © {new Date().getFullYear()} / System Online
+          </div>
+        </div>
       </footer>
     </div>
   );

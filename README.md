@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Campus Founders Network
+
+An exclusive directory for ambitious university founders to find co-founders, share ideas, and build the next big thing on campus.
+
+## Tech Stack
+
+- **Framework:** [Next.js](https://nextjs.org) (App Router)
+- **Authentication:** [Supabase Auth](https://supabase.com/auth)
+- **Database:** [Supabase / PostgreSQL](https://supabase.com/database)
+- **Styling:** Tailwind CSS (Custom "Academic Meets Silicon Valley" Aesthetic)
+- **Typography:** Instrument Serif, Plus Jakarta Sans, DM Mono
 
 ## Getting Started
 
-First, run the development server:
+### 1. Prerequisites
+
+- Node.js installed
+- A Supabase project
+
+### 2. Environment Variables
+
+Create a `.env.local` file in the root directory and add your Supabase credentials:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 3. Installation
+
+```bash
+npm install
+```
+
+### 4. Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `src/app`: Application routes and pages
+- `src/app/(app)`: Authenticated application routes (Dashboard, etc.)
+- `src/components`: Reusable UI components
+- `src/lib/supabase`: Supabase clients and middleware
+- `public`: Static assets
 
-## Learn More
+## Design Philosophy
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The project follows a unique "Academic meets Silicon Valley" aesthetic:
+- **High Contrast:** Parchment backgrounds with deep ink blue text.
+- **Bold Accents:** Vibrant orange highlights.
+- **Brutalist Elements:** Sharp edges, solid shadows, and monochromatic technical details.
+- **Editorial Typography:** Elegant serifs for storytelling mixed with technical monospaced fonts for data.

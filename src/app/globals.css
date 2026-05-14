@@ -1,53 +1,54 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #ffffff;
-  --color-foreground: #0f172a;
+  --color-background: #F4F1EA;
+  --color-foreground: #0A0F1C;
 
-  --color-card: #ffffff;
-  --color-card-foreground: #0f172a;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #0A0F1C;
 
-  --color-popover: #ffffff;
-  --color-popover-foreground: #0f172a;
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #0A0F1C;
 
-  --color-primary: #111827;
-  --color-primary-foreground: #ffffff;
-  --color-primary-hover: #1f2937;
+  --color-primary: #FF3B00;
+  --color-primary-foreground: #FFFFFF;
+  --color-primary-hover: #E63500;
 
-  --color-secondary: #f8fafc;
-  --color-secondary-foreground: #0f172a;
+  --color-secondary: #EAE6DB;
+  --color-secondary-foreground: #0A0F1C;
 
-  --color-muted: #f1f5f9;
-  --color-muted-foreground: #64748b;
+  --color-muted: #E0DBCE;
+  --color-muted-foreground: #6B685F;
 
-  --color-accent: #f1f5f9;
-  --color-accent-foreground: #0f172a;
+  --color-accent: #0A0F1C;
+  --color-accent-foreground: #F4F1EA;
 
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
 
-  --color-border: #e2e8f0;
-  --color-input: #e2e8f0;
-  --color-ring: #111827;
+  --color-border: #D6D1C4;
+  --color-input: #D6D1C4;
+  --color-ring: #FF3B00;
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-plus-jakarta-sans);
+  --font-mono: var(--font-dm-mono);
+  --font-serif: var(--font-instrument-serif);
 
-  /* Badge Colors — light pastels */
-  --color-badge-technical-bg: #dbeafe;
-  --color-badge-technical-text: #1e40af;
+  /* Badge Colors — updated to match new aesthetic */
+  --color-badge-technical-bg: #E3E8F5;
+  --color-badge-technical-text: #1E3A8A;
 
-  --color-badge-nontechnical-bg: #ffedd5;
-  --color-badge-nontechnical-text: #9a3412;
+  --color-badge-nontechnical-bg: #FEE2E2;
+  --color-badge-nontechnical-text: #991B1B;
 
-  --color-badge-idea-bg: #f3e8ff;
-  --color-badge-idea-text: #6b21a8;
+  --color-badge-idea-bg: #F3E8FF;
+  --color-badge-idea-text: #6B21A8;
 
-  --color-badge-timeline-bg: #d1fae5;
-  --color-badge-timeline-text: #065f46;
+  --color-badge-timeline-bg: #D1FAE5;
+  --color-badge-timeline-text: #065F46;
 
-  --color-badge-topic-bg: #f1f5f9;
-  --color-badge-topic-text: #334155;
+  --color-badge-topic-bg: #EAE6DB;
+  --color-badge-topic-text: #0A0F1C;
 }
 
 body {
@@ -55,15 +56,17 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
   min-height: 100vh;
+  /* Add subtle grain overlay for texture */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
 }
 
 /* Custom Utilities */
 .input {
   width: 100%;
-  background-color: #ffffff;
+  background-color: transparent;
   border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  padding: 0.625rem 0.875rem;
+  border-radius: 0px; /* Brutalist sharp edges */
+  padding: 0.75rem 1rem;
   font-size: 0.875rem;
   color: var(--color-foreground);
   transition: all 0.2s;
@@ -71,8 +74,8 @@ body {
 
 .input:focus {
   outline: none;
-  border-color: var(--color-ring);
-  box-shadow: 0 0 0 1px var(--color-ring);
+  border-color: var(--color-accent);
+  box-shadow: 4px 4px 0px 0px var(--color-accent); /* Brutalist shadow */
 }
 
 .input::placeholder {
@@ -95,7 +98,6 @@ input[type="checkbox"], input[type="radio"] {
 }
 ::-webkit-scrollbar-thumb {
   background: var(--color-border);
-  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-muted-foreground);
@@ -119,20 +121,47 @@ input[type="checkbox"], input[type="radio"] {
 .badge-technical {
   background-color: var(--color-badge-technical-bg);
   color: var(--color-badge-technical-text);
+  border: 1px solid var(--color-badge-technical-text);
 }
 .badge-nontechnical {
   background-color: var(--color-badge-nontechnical-bg);
   color: var(--color-badge-nontechnical-text);
+  border: 1px solid var(--color-badge-nontechnical-text);
 }
 .badge-idea {
   background-color: var(--color-badge-idea-bg);
   color: var(--color-badge-idea-text);
+  border: 1px solid var(--color-badge-idea-text);
 }
 .badge-timeline {
   background-color: var(--color-badge-timeline-bg);
   color: var(--color-badge-timeline-text);
+  border: 1px solid var(--color-badge-timeline-text);
 }
 .badge-topic {
   background-color: var(--color-badge-topic-bg);
   color: var(--color-badge-topic-text);
+  border: 1px solid var(--color-badge-topic-text);
 }
+
+/* Animations */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-reveal {
+  animation: reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
