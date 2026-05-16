@@ -165,3 +165,18 @@ input[type="checkbox"], input[type="radio"] {
 .delay-200 { animation-delay: 200ms; }
 .delay-300 { animation-delay: 300ms; }
 .delay-400 { animation-delay: 400ms; }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-reveal,
+  .animate-pulse,
+  [class*="animate-[marquee_"] {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

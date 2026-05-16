@@ -33,11 +33,6 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
       </div>
 
       <div className="max-w-4xl mx-auto w-full relative z-10 py-12 px-6">
-        {/* Back Link */}
-        <Link href="/dashboard" className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-12 group">
-          <span className="group-hover:-translate-x-1 transition-transform">&larr;</span> Back to Directory
-        </Link>
-
         {/* Profile Header */}
         <div className="bg-secondary border border-border p-8 lg:p-12 animate-reveal">
           <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-12 border-b border-border pb-8">

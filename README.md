@@ -7,7 +7,7 @@ An exclusive directory for ambitious university founders to find co-founders, sh
 - **Framework:** [Next.js](https://nextjs.org) (App Router)
 - **Authentication:** [Supabase Auth](https://supabase.com/auth)
 - **Database:** [Supabase / PostgreSQL](https://supabase.com/database)
-- **Styling:** Tailwind CSS (Custom "Academic Meets Silicon Valley" Aesthetic)
+- **Styling:** Tailwind CSS (custom "Academic Meets Silicon Valley" aesthetic)
 - **Typography:** Instrument Serif, Plus Jakarta Sans, DM Mono
 
 ## Getting Started
@@ -29,7 +29,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ### 3. Installation
 
 ```bash
-npm install
+npm ci
 ```
 
 ### 4. Development
@@ -40,18 +40,26 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to see the application.
 
+## Quality Commands
+
+```bash
+npm run lint
+npm run typecheck
+npm run check
+npm run build
+```
+
 ## Project Structure
 
-- `src/app`: Application routes and pages
-- `src/app/(app)`: Authenticated application routes (Dashboard, etc.)
-- `src/components`: Reusable UI components
-- `src/lib/supabase`: Supabase clients and middleware
-- `public`: Static assets
+- `src/app`: application routes and pages
+- `src/app/(app)`: authenticated application routes
+- `src/components`: reusable UI components
+- `src/lib/supabase`: Supabase clients and auth proxy logic
+- `src/types`: shared TypeScript models
+- `docs/security-checklist.md`: RLS and DB hardening checklist
 
-## Design Philosophy
+## Security Notes
 
-The project follows a unique "Academic meets Silicon Valley" aesthetic:
-- **High Contrast:** Parchment backgrounds with deep ink blue text.
-- **Bold Accents:** Vibrant orange highlights.
-- **Brutalist Elements:** Sharp edges, solid shadows, and monochromatic technical details.
-- **Editorial Typography:** Elegant serifs for storytelling mixed with technical monospaced fonts for data.
+- Auth/session gatekeeping is handled in `src/proxy.ts` for protected routes.
+- RLS policies must be configured in Supabase for `profiles` and `connections`.
+- See `docs/security-checklist.md` for required policy and indexing expectations.

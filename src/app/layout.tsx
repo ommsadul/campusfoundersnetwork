@@ -21,7 +21,7 @@ const dmMono = DM_Mono({
 
 export const metadata: Metadata = {
   title: "Campus Founders Network",
-  description: "Find your co-founder on campus — like YC co-founder matching, but for universities",
+  description: "Find your co-founder on campus - like YC co-founder matching, but for universities",
 };
 
 export default function RootLayout({

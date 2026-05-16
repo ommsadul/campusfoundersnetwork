@@ -37,6 +37,9 @@ Thumbs.db
 .idea/
 *.log
 *.local
+.npm-cache/
+.codex/
+*.tmp
 
 # debug
 npm-debug.log*

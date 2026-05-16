@@ -1,116 +1,261 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
-import Link from "next/link";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { FilterBar } from "@/components/dashboard/filter-bar";
+import { FounderCard } from "@/components/dashboard/founder-card";
+import { ConnectModal } from "@/components/dashboard/connect-modal";
+import type { Profile } from "@/types/database";
 
-export default async function DashboardPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+const MOCK_FOUNDERS: Profile[] = [
+  {
+    id: "mock-1",
+    first_name: "Aarav",
+    last_name: "Patel",
+    bio: "Computer science student focused on applied AI products.",
+    location: "Boston",
+    university: "Northeastern University",
+    is_technical: true,
+    idea_status: "EXPLORING",
+    idea_description: "Building an AI workflow assistant for student startups.",
+    timeline: "READY_WHEN_RIGHT",
+    startup_areas: ["AI/ML", "SaaS", "DevTools"],
+    interested_topics: ["agent systems", "product strategy"],
+    accomplishment: "Built and shipped 4 web products in college.",
+    education: "BS Computer Science, 2027",
+    linkedin_url: "",
+    profile_completed: true,
+  },
+  {
+    id: "mock-2",
+    first_name: "Maya",
+    last_name: "Chen",
+    bio: "Growth and GTM operator with fintech interest.",
+    location: "San Francisco",
+    university: "UC Berkeley",
+    is_technical: false,
+    idea_status: "COMMITTED",
+    idea_description: "Working on modern treasury tools for student founders.",
+    timeline: "ALREADY_FULLTIME",
+    startup_areas: ["Fintech", "SaaS"],
+    interested_topics: ["distribution", "payments"],
+    accomplishment: "Scaled a campus product from 0 to 8k MAU.",
+    education: "BA Economics, 2026",
+    linkedin_url: "",
+    profile_completed: true,
+  },
+  {
+    id: "mock-3",
+    first_name: "Noah",
+    last_name: "Williams",
+    bio: "Backend engineer with infra and API focus.",
+    location: "Austin",
+    university: "UT Austin",
+    is_technical: true,
+    idea_status: "OPEN",
+    idea_description: "Open to joining infra-heavy early-stage ideas.",
+    timeline: "NEXT_YEAR",
+    startup_areas: ["DevTools", "AI/ML", "Hardware"],
+    interested_topics: ["distributed systems", "security"],
+    accomplishment: "Designed a high-throughput event processing system.",
+    education: "BS Computer Engineering, 2027",
+    linkedin_url: "",
+    profile_completed: true,
+  },
+  {
+    id: "mock-4",
+    first_name: "Sofia",
+    last_name: "Garcia",
+    bio: "Design-minded founder interested in consumer products.",
+    location: "New York",
+    university: "NYU",
+    is_technical: false,
+    idea_status: "EXPLORING",
+    idea_description: "Testing social accountability products for students.",
+    timeline: "READY_WHEN_RIGHT",
+    startup_areas: ["Consumer", "SaaS"],
+    interested_topics: ["community", "behavior design"],
+    accomplishment: "Launched two successful campus communities.",
+    education: "BS Media, Culture, and Communication, 2026",
+    linkedin_url: "",
+    profile_completed: true,
+  },
+  {
+    id: "mock-5",
+    first_name: "Ibrahim",
+    last_name: "Khan",
+    bio: "ML engineer focused on healthcare prediction models.",
+    location: "Chicago",
+    university: "Northwestern University",
+    is_technical: true,
+    idea_status: "COMMITTED",
+    idea_description: "Building tooling for preventive health monitoring.",
+    timeline: "ALREADY_FULLTIME",
+    startup_areas: ["Healthtech", "AI/ML"],
+    interested_topics: ["medical AI", "data quality"],
+    accomplishment: "Published 2 ML papers and led an open-source team.",
+    education: "MS Computer Science, 2026",
+    linkedin_url: "",
+    profile_completed: true,
+  },
+  {
+    id: "mock-6",
+    first_name: "Emma",
+    last_name: "Lopez",
+    bio: "Product generalist with edtech and marketplace experience.",
+    location: "Los Angeles",
+    university: "UCLA",
+    is_technical: false,
+    idea_status: "OPEN",
+    idea_description: "Looking for technical co-founder in education products.",
+    timeline: "READY_WHEN_RIGHT",
+    startup_areas: ["EduTech", "Consumer", "SaaS"],
+    interested_topics: ["market research", "brand"],
+    accomplishment: "Built and monetized a niche campus marketplace.",
+    education: "BA Business Economics, 2027",
+    linkedin_url: "",
+    profile_completed: true,
+  },
+];
+const USE_MOCK_DATA = process.env.NODE_ENV === "development";
 
-  if (!user) redirect("/sign-in");
+export default function DashboardPage() {
+  const [founders, setFounders] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState("ALL");
+  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFounder, setSelectedFounder] = useState<Profile | null>(null);
+  const [connectSuccess, setConnectSuccess] = useState<string | null>(null);
+  const [connectError, setConnectError] = useState<string | null>(null);
 
-  // Fetch the current user's university to filter others
-  const { data: currentUserProfile } = await supabase
-    .from("profiles")
-    .select("university")
-    .eq("id", user.id)
-    .single();
+  const supabase = createClient();
 
-  // Fetch real founders from the database
-  // Note: Temporarily showing yourself in the directory as requested
-  const { data: founders, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("profile_completed", true)
-    .eq("university", currentUserProfile?.university) // Filter by same university
-    .order("updated_at", { ascending: false });
+  useEffect(() => {
+    async function fetchData() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id ?? null);
 
-  if (error) {
-    console.error("Error fetching founders:", error);
+      let query = supabase.from("profiles").select("*").eq("profile_completed", true);
+      if (user) query = query.neq("id", user.id);
+
+      const { data, error } = await query;
+
+      if (error) {
+        setConnectError("Could not load founder profiles. Please refresh.");
+      } else {
+        const loaded = (data ?? []) as Profile[];
+        setFounders(loaded.length > 0 ? loaded : USE_MOCK_DATA ? MOCK_FOUNDERS : []);
+      }
+      setLoading(false);
+    }
+
+    fetchData();
+  }, [supabase]);
+
+  const toggleArea = (area: string) => {
+    setSelectedAreas((prev) => (prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area]));
+  };
+
+  const filteredFounders = founders.filter((founder) => {
+    const matchesType =
+      activeFilter === "ALL" ||
+      (activeFilter === "TECHNICAL" && founder.is_technical) ||
+      (activeFilter === "NON-TECHNICAL" && !founder.is_technical);
+
+    const matchesArea = selectedAreas.length === 0 || selectedAreas.some((area) => (founder.startup_areas || []).includes(area));
+
+    return matchesType && matchesArea;
+  });
+
+  const handleOpenConnect = (founder: Profile) => {
+    setConnectError(null);
+    setConnectSuccess(null);
+
+    if (currentUserId && founder.id === currentUserId) {
+      setConnectError("You cannot send a request to your own profile.");
+      return;
+    }
+
+    setSelectedFounder(founder);
+    setIsModalOpen(true);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-background">
+        <div className="w-12 h-12 border-t-2 border-primary rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-screen-2xl mx-auto py-12 px-6">
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 border-b border-border pb-8 mb-12">
-        <div className="animate-reveal">
-          <div className="inline-flex items-center gap-3 mb-4">
-             <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-             <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-               Live Database / {currentUserProfile?.university || "Global"}
-             </span>
-          </div>
-          <h1 className="font-serif text-5xl sm:text-6xl text-foreground leading-none tracking-tight">
-            Founder <span className="italic text-primary">Directory</span>
-          </h1>
-        </div>
-        <Link
-          href="/onboarding"
-          className="bg-primary text-primary-foreground px-6 py-3 font-mono font-bold uppercase tracking-wider transition-all border border-primary hover:bg-background hover:text-primary animate-reveal delay-100"
-        >
-          Edit My Profile
-        </Link>
-      </div>
+    <div className="flex-1 bg-background p-6 md:p-12 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[grid-line_1px_rgba(0,0,0,0.1)] [background-size:40px_40px]" />
 
-      {!founders || founders.length === 0 ? (
-        <div className="bg-secondary border border-border p-12 text-center animate-reveal">
-          <h3 className="font-serif text-3xl mb-4 text-foreground">No other founders yet.</h3>
-          <p className="font-mono text-sm text-muted-foreground uppercase tracking-widest">
-            Be the first to build at {currentUserProfile?.university || "your university"}.
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {founders.map((founder, i) => (
-            <div 
-              key={founder.id} 
-              className={`bg-card border border-border p-6 hover:border-primary transition-all group flex flex-col animate-reveal`}
-              style={{ animationDelay: `${(i + 1) * 100}ms` }}
-            >
-              <div className="flex justify-between items-start mb-6">
-                <h3 className="font-serif text-3xl text-foreground group-hover:text-primary transition-colors">
-                  {founder.first_name} {founder.last_name}
-                </h3>
-                <span className="font-mono text-[10px] uppercase tracking-widest bg-muted text-muted-foreground px-2 py-1 border border-border">
-                  {founder.is_technical ? "TECH" : "BIZ"}
-                </span>
-              </div>
-              
-              <div className="mb-6 flex-1">
-                <p className="font-mono text-xs text-muted-foreground uppercase tracking-widest mb-2 border-b border-border/50 pb-2">
-                  Current Thesis
-                </p>
-                <p className="text-foreground text-sm font-medium leading-relaxed italic">
-                  &quot;{founder.idea_description || "Exploring interesting problem spaces..."}&quot;
-                </p>
-              </div>
-
-              <div>
-                <p className="font-mono text-xs text-muted-foreground uppercase tracking-widest mb-3">
-                  Core Competencies
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {(founder.startup_areas || []).slice(0, 3).map((area: string) => (
-                    <span key={area} className="font-mono text-xs bg-secondary text-secondary-foreground px-2 py-1 border border-border">
-                      {area}
-                    </span>
-                  ))}
-                  {(!founder.startup_areas || founder.startup_areas.length === 0) && (
-                    <span className="font-mono text-[10px] text-muted-foreground italic">No areas specified</span>
-                  )}
+      <div className="max-w-7xl mx-auto relative z-10">
+        <header className="mb-12">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border/50 pb-8">
+            <div className="max-w-2xl border-l-4 border-primary pl-6">
+              <p className="font-serif text-4xl md:text-5xl leading-tight text-foreground">
+                Connecting driven founders.
+                <span className="text-primary"> Building what matters.</span>
+              </p>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Scan the network for technical partners and domain experts. Broadcast your thesis to initialize high-signal connections.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4 min-w-[320px]">
+              <div className="border-l border-border/60 pl-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground mb-2">Nodes Online</p>
+                <div className="flex items-end gap-2">
+                  <span className="w-2.5 h-2.5 bg-primary rounded-full mb-2 animate-pulse" />
+                  <span className="font-serif text-6xl leading-none text-foreground">{founders.length}</span>
                 </div>
               </div>
-
-              <Link 
-                href={`/profile/${founder.id}`}
-                className="w-full mt-8 bg-accent text-accent-foreground py-3 font-mono text-sm uppercase tracking-wider border border-border hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-center gap-2 group/btn"
-              >
-                <span>View Profile</span>
-                <span className="font-serif italic text-lg group-hover/btn:translate-x-1 transition-transform">&rarr;</span>
-              </Link>
+              <div className="border-l border-border/60 pl-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground mb-2">Resulting Matches</p>
+                <div className="flex items-end gap-2">
+                  <span className="w-2.5 h-2.5 bg-primary rounded-full mb-2" />
+                  <span className="font-serif text-6xl leading-none text-foreground">{filteredFounders.length}</span>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
+          </div>
+        </header>
+
+        {connectSuccess && <div className="mb-6 bg-primary/10 border border-primary text-primary px-4 py-3 font-mono text-xs uppercase tracking-wider">{connectSuccess}</div>}
+        {connectError && <div className="mb-6 bg-destructive/10 border border-destructive text-destructive px-4 py-3 font-mono text-xs uppercase tracking-wider">{connectError}</div>}
+
+        <FilterBar activeFilter={activeFilter} setActiveFilter={setActiveFilter} selectedAreas={selectedAreas} toggleArea={toggleArea} />
+
+        {filteredFounders.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredFounders.map((founder, index) => (
+              <FounderCard key={founder.id} founder={founder} index={index} onConnect={() => handleOpenConnect(founder)} />
+            ))}
+          </div>
+        ) : (
+          <div className="py-24 border border-dashed border-border flex flex-col items-center justify-center text-center">
+            <span className="font-serif text-4xl text-muted-foreground mb-4 opacity-50">No matching nodes found.</span>
+            <button onClick={() => { setActiveFilter("ALL"); setSelectedAreas([]); }} className="font-mono text-xs uppercase tracking-widest text-primary hover:underline">
+              [ Reset Filters ]
+            </button>
+          </div>
+        )}
+      </div>
+
+      {selectedFounder && (
+        <ConnectModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          receiverId={selectedFounder.id}
+          receiverName={`${selectedFounder.first_name ?? "Founder"}`}
+          onSuccess={() => setConnectSuccess("Signal broadcasted. Connection pending.")}
+        />
       )}
     </div>
   );
