@@ -62,3 +62,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local concept assets
+public/claude-code.png
+public/claude-fail.png
+public/claude-mitosis.gif
+
+# local-only repo metadata/docs
+.github/workflows/ci.yml
+docs/security-checklist.md
